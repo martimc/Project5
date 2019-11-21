@@ -6,47 +6,43 @@
 #include <sstream>
 #include <string>
 #include <random>
-#include <armadillo>
+//#include <armadillo>
 
 using namespace std;
 ofstream ofile;
+void Output(int n, double* u, int tsteps, double dt);
 
-void Output(int n, double* u);
-//random_device rd;
-//mt19937_64 gen(rd());
-//uniform_real_distribution<double> RandomNumberGenerator(0.0,1.0);
-//uniform_int_distribution<int> RandomPosition(0, size-1);
-//looping over all spins
+void Forward_Euler(int n, int tsteps, double dx, double dt, double alpha) {
+	double *u, *u_new;
+	u = new double[n+1]; u_new = new double[n + 1];
 
-/*void Forward_Euler(int n, int tsteps, double dx, double dt, double alpha) {
-	int size = n;
-	double u[size + 1], u_new[size + 1];
-	u[n] = 1; u_new[n] = 0;
+	u[n] = 1; u_new[n] = 0; //boundary conditions and initial conidtions
 	for (int i = 0; i < n; i++) {
 		u[i] = 0; u_new[i] = 0;
 	}
-	for (int t = 1; t <= tsteps; t++) {
+	for (int t = 1; t <= tsteps; t++) { //Forward Euler algorithm
 		for (int i = 1; i < n; i++) {
 			u_new[i] = alpha * u[i - 1] + (1 - 2 * alpha) * u[i] + alpha * u[i + 1];
 		}
+		//Output(n, u);
 		for (int i = 1; i < n; i++) {
 			u[i] = u_new[i];
 		}
 	}
-	Output(n, u);
-}*/
-
-void Output(int n, double* u) {
-	ofile << setiosflags(ios::showpoint | ios::uppercase);
-	for (int i = 0; i < n; i++) {
-		ofile << setw(8) << setprecision(8) << " " << u[i];
-	}
-	ofile << setw(8) << setprecision(8) << " " << u[n] << endl;
+	Output(n, u, tsteps, dt);
 }
 
-void read_input(int& n, int& tsteps, double& dx, double& dt) {
-	cout << "size of array: ";
-	cin >> n;
+void Output(int n, double* u, int tsteps, double dt) {
+	//function for writing the results in a file
+	ofile << setiosflags(ios::showpoint | ios::uppercase);
+	//ofile << setprecision(8) << "t = " << dt * tsteps << endl;
+	for (int i = 0; i < n; i++) {
+		ofile << setw(4) << setprecision(8) << " " << u[i];
+	}
+	ofile << setw(4) << setprecision(8) << " " << u[n] << endl;
+}
+
+void read_input(int& tsteps, double& dx, double& dt) {
 	cout << "number of time steps: ";
 	cin >> tsteps;
 	cout << "dx: ";
@@ -70,16 +66,9 @@ int main(int argc, char* argv[]) {
 
 	ofile.open(outfilename);
 
-	read_input(n, tsteps, dx, dt);
+	read_input(tsteps, dx, dt);
+	n = 1 / dx;
 	alpha = dt / dx / dx;
-
-	vec u(n + 1);
-
-	for (int i = 0; i < n; i++) {
-		u[i] = 0;
-	}
-	u[n] = 1;
-
-	Output(n, u);
-	//Forward_Euler(n, tsteps, dx, dt, alpha);
+	
+	Forward_Euler(n, tsteps, dx, dt, alpha);
 }
