@@ -35,7 +35,7 @@ void Forward_Euler(int n, int tsteps, double dx, double dt, double alpha) {
 void Output(int n, double* u, int tsteps, double dt) {
 	//function for writing the results in a file
 	ofile << setiosflags(ios::showpoint | ios::uppercase);
-	//ofile << setprecision(8) << "t = " << dt * tsteps << endl;
+	ofile << setprecision(8) << dt * tsteps << " ";
 	ofile << setprecision(1) << n << endl;
 	for (int i = 0; i < n; i++) {
 		ofile << setprecision(8) << u[i] << " ";
