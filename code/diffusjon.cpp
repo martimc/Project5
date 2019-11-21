@@ -36,10 +36,11 @@ void Output(int n, double* u, int tsteps, double dt) {
 	//function for writing the results in a file
 	ofile << setiosflags(ios::showpoint | ios::uppercase);
 	//ofile << setprecision(8) << "t = " << dt * tsteps << endl;
+	ofile << setprecision(1) << n << endl;
 	for (int i = 0; i < n; i++) {
-		ofile << setw(4) << setprecision(8) << " " << u[i];
+		ofile << setprecision(8) << u[i] << " ";
 	}
-	ofile << setw(4) << setprecision(8) << " " << u[n] << endl;
+	ofile << setprecision(8) << u[n] << endl;
 }
 
 void read_input(int& tsteps, double& dx, double& dt) {
