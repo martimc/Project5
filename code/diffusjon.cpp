@@ -52,11 +52,43 @@ void read_input(int& tsteps, double& dx, double& dt) {
 	cin >> dt;
 }
 
+void LU_decomp(double a, double b, double c, vector<double> &L, vector<double> &U){
+
+	U[0]=b;
+
+	for (int k = 1; k < L.size(); k++){
+
+		L[k] = a/U[k-1];
+		U[k] = b - L[k]*c;
+		cout << L[k] << endl;
+		cout << U[k] << endl;
+	}
+}
+
+void solve_Ly_f(vector<double> &f, vector<double> &y, vector<double> &L){
+	y[0] = f[0];
+
+	for (int k=1; k< y.size(); k++){
+		y[k] = f[k] - L[k]*y[k-1];
+		cout << y[k] << endl;
+	}
+
+}
+
+void solve_Uu_f(vector<double> &y, vector<double> &U, vector<double> &u, double c){
+	u[u.size()] = y[u.size()]/U[u.size()];
+	for (int k = y.size()-1; k != 0; k--){
+		u[k] = y[k]/U[k] - c * u[k+1] / U[k];
+		cout << u[k] << endl;
+	}
+}
+
 int main(int argc, char* argv[]) {
 	char* outfilename;
 	int n, tsteps;
 	double dx, dt, alpha;
-	
+
+
 	if (argc <= 1) {
 		cout << "Bad Usage: " << argv[0] << " read also output file on same line" << endl;
 		exit(1);
@@ -67,9 +99,23 @@ int main(int argc, char* argv[]) {
 
 	ofile.open(outfilename);
 
-	read_input(tsteps, dx, dt);
+	// read_input(tsteps, dx, dt);
 	n = 1 / dx;
 	alpha = dt / dx / dx;
-	
-	Forward_Euler(n, tsteps, dx, dt, alpha);
+
+
+	int length = 10;
+	int a, b, c;
+	a=1;
+	b=2;
+	c=1;
+	vector<double> L(length,0);
+	vector<double> U(length,0);
+	LU_decomp(a,b,c, L, U);
+	vector<double> y(length,0);
+	vector<double> f(length,2);
+	solve_Ly_f(f,y,L);
+	vector<double> u(length,0);
+	solve_Uu_f(y,U,u,c);
+	// Forward_Euler(n, tsteps, dx, dt, alpha);
 }
