@@ -68,21 +68,18 @@ void LU_decomp(Variables& var){
 
 	var.U[0]=var.b;
 
-	for (int k = 1; k < var.length; k++){
+	for (int k = 1; k <= var.length; k++){
 
 		var.L[k] = var.a/var.U[k-1];
 		var.U[k] = var.b - var.L[k]*var.c;
-		cout << var.L[k] << endl;
-		cout << var.U[k] << endl;
 	}
 }
 
 void solve_Ly_f(Variables& var){
 	var.y[0] = var.f[0];
 
-	for (int k=1; k< var.length; k++){
+	for (int k=1; k<= var.length; k++){
 		var.y[k] = var.f[k] - var.L[k]*var.y[k-1];
-		cout << var.y[k] << endl;
 	}
 
 }
@@ -91,7 +88,7 @@ void solve_Uu_f(Variables& var){
 	var.u[var.length] = var.y[var.length]/var.U[var.length];
 	for (int k = var.length-1; k != 0; k--){
 		var.u[k] = var.y[k]/var.U[k] - var.c * var.u[k+1] / var.U[k];
-		cout << var.u[k] << endl;
+		cout << "Solution elements: " << var.u[k] << endl;
 	}
 }
 
@@ -127,6 +124,9 @@ int main(int argc, char* argv[]) {
 	sol.a=1;
 	sol.b=2;
 	sol.c=1;
+	for (int i=0; i<sol.length; i++){
+		sol.f[i] = 2;
+	}
 
 	LU_decomp(sol);
 	solve_Ly_f(sol);
