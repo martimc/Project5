@@ -12,6 +12,18 @@ using namespace std;
 ofstream ofile;
 void Output(int n, double* u, int tsteps, double dt);
 
+struct Variables{
+	double *L;
+	double *U;
+	double *y;
+	double *f;
+	double *u;
+	int length;
+	int a;
+	int b;
+	int c;
+};
+
 void Forward_Euler(int n, int tsteps, double dx, double dt, double alpha) {
 	double *u, *u_new;
 	u = new double[n+1]; u_new = new double[n + 1];
@@ -52,34 +64,34 @@ void read_input(int& tsteps, double& dx, double& dt) {
 	cin >> dt;
 }
 
-void LU_decomp(double a, double b, double c, vector<double> &L, vector<double> &U){
+void LU_decomp(Variables& var){
 
-	U[0]=b;
+	var.U[0]=var.b;
 
-	for (int k = 1; k < L.size(); k++){
+	for (int k = 1; k < var.length; k++){
 
-		L[k] = a/U[k-1];
-		U[k] = b - L[k]*c;
-		cout << L[k] << endl;
-		cout << U[k] << endl;
+		var.L[k] = var.a/var.U[k-1];
+		var.U[k] = var.b - var.L[k]*var.c;
+		cout << var.L[k] << endl;
+		cout << var.U[k] << endl;
 	}
 }
 
-void solve_Ly_f(vector<double> &f, vector<double> &y, vector<double> &L){
-	y[0] = f[0];
+void solve_Ly_f(Variables& var){
+	var.y[0] = var.f[0];
 
-	for (int k=1; k< y.size(); k++){
-		y[k] = f[k] - L[k]*y[k-1];
-		cout << y[k] << endl;
+	for (int k=1; k< var.length; k++){
+		var.y[k] = var.f[k] - var.L[k]*var.y[k-1];
+		cout << var.y[k] << endl;
 	}
 
 }
 
-void solve_Uu_f(vector<double> &y, vector<double> &U, vector<double> &u, double c){
-	u[u.size()] = y[u.size()]/U[u.size()];
-	for (int k = y.size()-1; k != 0; k--){
-		u[k] = y[k]/U[k] - c * u[k+1] / U[k];
-		cout << u[k] << endl;
+void solve_Uu_f(Variables& var){
+	var.u[var.length] = var.y[var.length]/var.U[var.length];
+	for (int k = var.length-1; k != 0; k--){
+		var.u[k] = var.y[k]/var.U[k] - var.c * var.u[k+1] / var.U[k];
+		cout << var.u[k] << endl;
 	}
 }
 
@@ -104,18 +116,20 @@ int main(int argc, char* argv[]) {
 	alpha = dt / dx / dx;
 
 
-	int length = 10;
-	int a, b, c;
-	a=1;
-	b=2;
-	c=1;
-	vector<double> L(length,0);
-	vector<double> U(length,0);
-	LU_decomp(a,b,c, L, U);
-	vector<double> y(length,0);
-	vector<double> f(length,2);
-	solve_Ly_f(f,y,L);
-	vector<double> u(length,0);
-	solve_Uu_f(y,U,u,c);
+
+	Variables sol;
+	sol.length = 10;
+	sol.L = new double[sol.length];
+	sol.U = new double[sol.length];
+	sol.y = new double[sol.length];
+	sol.f = new double[sol.length];
+	sol.u = new double[sol.length];
+	sol.a=1;
+	sol.b=2;
+	sol.c=1;
+
+	LU_decomp(sol);
+	solve_Ly_f(sol);
+	solve_Uu_f(sol);
 	// Forward_Euler(n, tsteps, dx, dt, alpha);
 }
