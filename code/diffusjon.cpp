@@ -86,12 +86,9 @@ void solve_Ly_f(Variables& var){
 
 void solve_Uu_f(Variables& var){
 	var.u[var.length-1] = var.y[var.length-1]/var.U[var.length-1];
-	for (int k = var.length-2; k != 0; k--){
+	for (int k = var.length-2; k != -1; k--){
 		var.u[k] = var.y[k]/var.U[k] - var.c * var.u[k+1] / var.U[k];
-		cout << "Solution elements: " << var.u[k] << endl;
 	}
-
-
 }
 
 int main(int argc, char* argv[]) {
@@ -117,7 +114,7 @@ int main(int argc, char* argv[]) {
 
 
 	Variables sol;
-	sol.length = 10;
+	sol.length = 3;
 	sol.L = new double[sol.length];
 	sol.U = new double[sol.length];
 	sol.y = new double[sol.length];
@@ -133,5 +130,7 @@ int main(int argc, char* argv[]) {
 	LU_decomp(sol);
 	solve_Ly_f(sol);
 	solve_Uu_f(sol);
+
+
 	// Forward_Euler(n, tsteps, dx, dt, alpha);
 }
