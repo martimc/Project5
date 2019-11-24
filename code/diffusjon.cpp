@@ -18,6 +18,7 @@ struct Variables{
 	double *y;
 	double *f;
 	double *u;
+	double *u_new;
 	int length;
 	int a;
 	int b;
@@ -28,67 +29,6 @@ struct Variables{
 	double dt;
 	double alpha;
 };
-
-void Forward_Euler(int n, int tsteps, double dx, double dt, double alpha) {
-	double *u, *u_new;
-	u = new double[n+1]; u_new = new double[n + 1];
-
-	u[n] = 1; u_new[n] = 0; //boundary conditions and initial conidtions
-	for (int i = 0; i < n; i++) {
-		u[i] = 0; u_new[i] = 0;
-	}
-	for (int t = 1; t <= tsteps; t++) { //Forward Euler algorithm
-		for (int i = 1; i < n; i++) {
-			u_new[i] = alpha * u[i - 1] + (1 - 2 * alpha) * u[i] + alpha * u[i + 1];
-		}
-		//Output(n, u);
-		for (int i = 1; i < n; i++) {
-			u[i] = u_new[i];
-		}
-	}
-	Output(n, u, tsteps, dt);
-}
-
-void Backward_Euler(int n, int tsteps, double dx, double dt, double alpha){
-	double *u = new double[n];
-	double *u_new = new double[n];
-	u[n-1]=1; // boundary conditions and initial conditions
-	u_new[n-1]=0;
-	for(int i=1; i<n-1; i++){
-		u[i]=0;
-		u_new[i]=0;
-	}
-	for(int t=1; t<tsteps; t++){
-		LU_decomp();
-		solve_Ly_f();
-		solve_Uu_f();
-		u(0)=0;
-		u(n-1)=1; //boundary conditions again
-		for(int i=0; i<n; i++){
-			y(i)=u(i)
-		}
-	}
-}
-
-void Output(int n, double* u, int tsteps, double dt) {
-	//function for writing the results in a file
-	ofile << setiosflags(ios::showpoint | ios::uppercase);
-	ofile << setprecision(8) << dt * tsteps << " ";
-	ofile << setprecision(1) << n << endl;
-	for (int i = 0; i < n; i++) {
-		ofile << setprecision(8) << u[i] << " ";
-	}
-	ofile << setprecision(8) << u[n] << endl;
-}
-
-void read_input(int& tsteps, double& dx, double& dt) {
-	cout << "number of time steps: ";
-	cin >> tsteps;
-	cout << "dx: ";
-	cin >> dx;
-	cout << "dt: ";
-	cin >> dt;
-}
 
 void LU_decomp(Variables& var){
 
@@ -118,6 +58,73 @@ void solve_Uu_f(Variables& var){
 	}
 }
 
+void Forward_Euler(int n, int tsteps, double dx, double dt, double alpha) {
+	double *u, *u_new;
+	u = new double[n+1]; u_new = new double[n + 1];
+
+	u[n] = 1; u_new[n] = 0; //boundary conditions and initial conidtions
+	for (int i = 0; i < n; i++) {
+		u[i] = 0; u_new[i] = 0;
+	}
+	for (int t = 1; t <= tsteps; t++) { //Forward Euler algorithm
+		for (int i = 1; i < n; i++) {
+			u_new[i] = alpha * u[i - 1] + (1 - 2 * alpha) * u[i] + alpha * u[i + 1];
+		}
+		//Output(n, u);
+		for (int i = 1; i < n; i++) {
+			u[i] = u_new[i];
+		}
+	}
+	Output(n, u, tsteps, dt);
+}
+
+void Backward_Euler(Variables& var){
+	var.u[var.length-1]=1; // boundary conditions and initial conditions
+	var.u_new[var.length-1]=0;
+	for(int i=1; i<var.length; i++){
+		var.u[i]=0;
+		var.u_new[i]=0;
+	}
+	for(int t=1; t<var.tsteps; t++){
+		LU_decomp(var);
+		solve_Ly_f(var);
+		solve_Uu_f(var);
+		var.u[0]=0;
+		var.u[var.length-1]=1; //boundary conditions again
+		for(int i=0; i<var.length; i++){
+			var.y[i]=var.u[i];
+		}
+	}
+	// Output(n, u, tsteps, dt);
+}
+
+void Crank_Nicholsen(Variables& var){
+	var.u[var.length-1]=1;
+	var.u_new[var.length-1]=0
+}
+
+void Output(int n, double* u, int tsteps, double dt) {
+	//function for writing the results in a file
+	ofile << setiosflags(ios::showpoint | ios::uppercase);
+	ofile << setprecision(8) << dt * tsteps << " ";
+	ofile << setprecision(1) << n << endl;
+	for (int i = 0; i < n; i++) {
+		ofile << setprecision(8) << u[i] << " ";
+	}
+	ofile << setprecision(8) << u[n] << endl;
+}
+
+void read_input(int& tsteps, double& dx, double& dt) {
+	cout << "number of time steps: ";
+	cin >> tsteps;
+	cout << "dx: ";
+	cin >> dx;
+	cout << "dt: ";
+	cin >> dt;
+}
+
+
+
 int main(int argc, char* argv[]) {
 	char* outfilename;
 	int n, tsteps;
@@ -130,6 +137,8 @@ int main(int argc, char* argv[]) {
 	sol.y = new double[sol.length];
 	sol.f = new double[sol.length];
 	sol.u = new double[sol.length];
+	sol.u_new = new double[sol.length];
+	sol.y = new double[sol.length];
 	sol.a=1;
 	sol.b=2;
 	sol.c=1;
@@ -158,6 +167,6 @@ int main(int argc, char* argv[]) {
 	solve_Ly_f(sol);
 	solve_Uu_f(sol);
 
-	Backward_Euler(sol)
+	Backward_Euler(sol);
 	// Forward_Euler(n, tsteps, dx, dt, alpha);
 }
