@@ -61,15 +61,8 @@ void solve_UuNew_u(Variables& var){
 	}
 }
 
-void thomas_algorithm(Variables& var){
-	LU_decomp(var);
-	solve_Ly_u(var);
-	solve_UuNew_u(var);
-}
-
-void Forward_Euler(int n, int tsteps, double dx, double dt, double alpha) {
-	double *u;
-	double *u_new;
+void Forward_Euler(int n, int tsteps, double dt, double alpha) {
+	double *u, *u_new;
 	u = new double[n+1]; u_new = new double[n + 1];
 
 	u[n] = 1; u_new[n] = 0; //boundary conditions and initial conidtions
@@ -107,10 +100,47 @@ void Backward_Euler(Variables& var){
 	Output(var.length, var.u, var.tsteps, var.dt);
 }
 
-// void Crank_Nicholsen(Variables& var){
-// 	var.u[var.length-1]=1;
-// 	var.u_new[var.length-1]=0
-// }
+void tridiag(double a, double b, double c, double* y, double* &u, int n) {
+	double denom;
+	double *c_new;
+	c_new = new double[n];
+	if (b == 0) throw("error 1 in tridiag");
+	denom = b;
+
+	u[0] = y[0] / denom;
+	for (int i = 1; i <= n; i++) {
+		c_new[i-1] = c / denom;
+		denom = b - a * c_new[i-1];
+		if (denom == 0) throw("error 2 in tridiag");
+		u[i] = (y[i] - a * u[i - 1]) / denom;
+	}
+	for (int j = (n - 1); j >= 0; j--) {
+		u[j] -= c_new[j] * u[j + 1];
+	}
+	//Output(n, u, 1, 0.005);
+}
+
+void Crank_Nicholsen(int n, int tsteps, double dt, double alpha){
+	double a, b, c;
+	double *u, *y;
+	u = new double[n + 1]; y = new double[n + 1];
+	a = -alpha; c = -alpha;
+	b = 2 + 2 * alpha;
+	for (int i = 0; i <= n; i++) {
+		u[i] = 0;
+	}
+
+	for (int t = 1; t <= tsteps; t++) {
+		for (int i = 1; i < n; i++) { // using forward euler to find the vector y in the equation Au = y
+			y[i] = alpha * u[i - 1] + (2 - 2 * alpha) * u[i] + alpha * u[i + 1];
+		}
+		y[0] = 0; y[n] = 1;
+		// Tridiagonal solver for finding u in the equaiton Au = y
+		tridiag(a, b, c, y, u, n);
+		u[0] = 0; u[n] = 1;
+	}
+	Output(n, u, tsteps, dt);
+}
 
 void Output(int n, double* u, int tsteps, double dt) {
 	//function for writing the results in a file
@@ -172,6 +202,19 @@ int main(int argc, char* argv[]) {
 
 	ofile.open(outfilename);
 
+	read_input(tsteps, dx, dt);
+	n = 1 / dx;
+	alpha = dt / dx / dx;
+
+
+
+
+	LU_decomp(sol);
+	solve_Ly_f(sol);
+	solve_Uu_f(sol);
+
 	Backward_Euler(sol);
-	Forward_Euler(n, tsteps, dx, dt, alpha);
+
+	Forward_Euler(n, tsteps, dt, alpha);
+	Crank_Nicholsen(n, tsteps, dt, alpha);
 }
