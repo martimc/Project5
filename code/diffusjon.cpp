@@ -107,15 +107,18 @@ void Forward_Euler(int n, int tsteps, double dt, double alpha) {
 
 void Backward_Euler(Variables& var){
 	for(int i=0; i<var.length; i++){
-		var.u[i]=0;
-		var.y[i]=0;
+		var.u[i]=0; // this is u of Au=y
+		var.y[i]=0; // this is y of Au=y
 	}
+	var.y[var.length]=1;
 	for(int t=1; t<var.tsteps; t++){
-		var.y[0]=0;
-		var.y[var.length]=1;
-		tridiag(var.a, var.b, var.c, var.y, var.u, var.length);
+		tridiag(var.a, var.b, var.c, var.y, var.u, var.length+1);
 		var.u[0]=0;
 		var.u[var.length]=1;
+		for(int i =0; i<=var.length; i++){
+			var.y[i]=var.u[i];
+		}
+
 	}
 	Output(var.length, var.y, var.tsteps, var.dt);
 }
