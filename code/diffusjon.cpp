@@ -18,7 +18,7 @@ void tridiag(double a, double b, double c, double* y, double* &u, int n) {
 	c_new = new double[n];
 	if (b == 0) throw("error 1 in tridiag");
 	u[0] = y[0]; u[n] = y[n];
-	
+
 	denom = b;
 	u[1] = y[1] / denom;
 	c_new[1] = c / denom;
