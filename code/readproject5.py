@@ -3,25 +3,32 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 import matplotlib.font_manager
-from itertools import groupby
-from collections import Counter
 
 def readfile(file):
-     # opens
-    u = []
-
-
-
+    u_forward = []
+    u_backward = []
+    u_CN = []
     o = open(file)
-    n = int(o.readline())
+    n = o.readline()
+    t,n = n.split()
+    n = int(n)
+    t = float(t)
     lines = o.readline()
     line = lines.split()
-
     for word in line:
-        u.append(float(word))
+        u_forward.append(float(word))
+    lines = o.readline()
+    line = lines.split()
+    for word in line:
+        u_backward.append(float(word))
+    lines = o.readline()
+    line = lines.split()
+    for word in line:
+        u_CN.append(float(word))
+
 
     o.close()
-    return u, n
+    return n, t, u_forward ,u_backward ,u_CN
 
 u, n = readfile(sys.argv[1])
 
