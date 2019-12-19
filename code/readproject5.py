@@ -4,6 +4,8 @@ import numpy as np
 import sys
 import matplotlib.font_manager
 
+
+
 def readfile(file):
     u_forward = []
     u_backward = []
@@ -30,17 +32,42 @@ def readfile(file):
     o.close()
     return n, t, u_forward ,u_backward ,u_CN
 
-u, n = readfile(sys.argv[1])
+n, t, u_forward, u_backward, u_CN = readfile(sys.argv[1])
 
 plt.rc('text', usetex=True)
 plt.rc('font', family='Computer Modern', size=15)
 x = np.linspace(0,1, n+1)
 
-plt.plot(x, u)
-plt.xlabel("position (x)")
-plt.ylabel("Displacement (u)")
-plt.title("Displacement as function of position")
+plt.plot(x, u_forward,'b', label = 'Forward Euler')
+plt.plot(x, u_backward,'r', label = 'Implicit Euler')
+plt.plot(x, u_CN,'y', label = 'Crank-Nicholson')
+plt.legend()
+plt.xlabel("position x")
+plt.ylabel("Displacement u(t)".format(t))
+plt.title("Explicit Euler solution for t = {}".format(t))
 plt.grid()
+plt.axis('equal')
 plt.tight_layout()
-plt.savefig('x_Disp.pdf')
+plt.savefig('stable_t10_x1.pdf')
 plt.close()
+"""
+plt.plot(x, u_backward)
+plt.xlabel("position x")
+plt.ylabel("Displacement u(t)".format(t))
+plt.title("Implicit Euler solution for t = {}".format(t))
+plt.grid()
+plt.axis('equal')
+plt.tight_layout()
+plt.savefig('IE.pdf')
+plt.close()
+
+plt.plot(x, u_CN)
+plt.xlabel("position x")
+plt.ylabel("Displacement u(t)".format(t))
+plt.title("Crank-Nicholson solution for t = {}".format(t))
+plt.grid()
+plt.axis('equal')
+plt.tight_layout()
+plt.savefig('CN.pdf')
+plt.close()
+"""
