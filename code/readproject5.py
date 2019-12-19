@@ -38,6 +38,7 @@ def readfile(file):
     return n, t, u_forward ,u_backward ,u_CN
 
 n, t, u_forward, u_backward, u_CN = readfile(sys.argv[1])
+x = np.linspace(0,1,n+1)
 
 plt.rc('text', usetex=True)
 plt.rc('font', family='Computer Modern', size=15)

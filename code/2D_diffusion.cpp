@@ -93,7 +93,7 @@ int main(int argc, char* argv[]) {
 	alpha = dt / dx / dx;
 
 	ofile << setiosflags(ios::showpoint | ios::uppercase);
-	ofile << setprecision(8) << alpha << endl;
+	//ofile << setprecision(8) << alpha << endl;
 
 	Forward_Euler(n, tsteps, dt, alpha);
 }
