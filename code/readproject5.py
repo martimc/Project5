@@ -48,7 +48,7 @@ plt.title("Solution for 3 schemes at t = {}".format(t))
 plt.grid()
 plt.axis('equal')
 plt.tight_layout()
-plt.savefig('t25dx1.pdf')
+plt.savefig('t50x1.pdf')
 plt.close()
 """
 plt.plot(x, u_backward)
