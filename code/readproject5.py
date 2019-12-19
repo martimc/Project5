@@ -8,6 +8,7 @@ import matplotlib.font_manager
 
 def f(x,t):
     N = 1000
+    u = 0
     u = x
     for n in range(1,N):
         u += (-1)**n*2/(n*np.pi)*np.sin(n*np.pi*x)*np.exp(-1*(n*np.pi)**2*t)
@@ -41,16 +42,17 @@ def readfile(file):
 
 n, t, u_forward, u_backward, u_CN = readfile(sys.argv[1])
 x = np.linspace(0,1,n+1)
-
-FEerror = np.max(np.abs(f(x,t) - u_forward))
-IEerror = np.max(np.abs(f(x,t) - u_backward))
 CNerror = np.max(np.abs(f(x,t) - u_CN))
+x = np.linspace(0,1,n+1)
+FEerror = np.max(np.abs(f(x,t) - u_forward))
+x = np.linspace(0,1,n+1)
+IEerror = np.max(np.abs(f(x,t) - u_backward))
 
 
+print('The maximum error for CN: {}'.format(CNerror))
 print('The maximum error for FE: {}'.format(FEerror))
 print('The maximum error for IE: {}'.format(IEerror))
-print('The maximum error for CN: {}'.format(CNerror))
-print('Difference between CN and FE: {}'.format(np.max(np.abs(u_CN - u_forward))))
+
 
 
 """
