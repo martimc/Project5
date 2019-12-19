@@ -4,6 +4,8 @@ import numpy as np
 import sys
 import matplotlib.font_manager
 
+
+
 def f(x,t):
     N = 1000
     u = x
@@ -35,11 +37,23 @@ def readfile(file):
 
 
     o.close()
-    return n, t, u_forward ,u_backward ,u_CN
+    return n, t, np.array(u_forward) ,np.array(u_backward) ,np.array(u_CN)
 
 n, t, u_forward, u_backward, u_CN = readfile(sys.argv[1])
 x = np.linspace(0,1,n+1)
 
+FEerror = np.max(np.abs(f(x,t) - u_forward))
+IEerror = np.max(np.abs(f(x,t) - u_backward))
+CNerror = np.max(np.abs(f(x,t) - u_CN))
+
+
+print('The maximum error for FE: {}'.format(FEerror))
+print('The maximum error for IE: {}'.format(IEerror))
+print('The maximum error for CN: {}'.format(CNerror))
+print('Difference between CN and FE: {}'.format(np.max(np.abs(u_CN - u_forward))))
+
+
+"""
 plt.rc('text', usetex=True)
 plt.rc('font', family='Computer Modern', size=15)
 
@@ -55,7 +69,7 @@ plt.axis('equal')
 plt.tight_layout()
 plt.savefig('t50x1.pdf')
 plt.close()
-"""
+
 plt.plot(x, u_backward)
 plt.xlabel("position x")
 plt.ylabel("Displacement u(t)".format(t))
