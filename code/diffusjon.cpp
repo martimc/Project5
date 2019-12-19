@@ -101,8 +101,6 @@ void Crank_Nicolson(int n, int tsteps, double dt, double alpha){
 void Output(int n, double* u, int tsteps, double dt) {
 	//function for writing the results in a file
 	ofile << setiosflags(ios::showpoint | ios::uppercase);
-	ofile << setprecision(8) << dt * tsteps << " ";
-	ofile << setprecision(1) << n << endl;
 	for (int i = 0; i < n; i++) {
 		ofile << setprecision(8) << u[i] << " ";
 	}
@@ -137,6 +135,10 @@ int main(int argc, char* argv[]) {
 
 	n = 1 / dx;
 	alpha = dt / dx / dx;
+
+	ofile << setiosflags(ios::showpoint | ios::uppercase);
+	ofile << setprecision(8) << dt * tsteps << " ";
+	ofile << setprecision(1) << n << endl;
 
 	Forward_Euler(n, tsteps, dt, alpha);
 	Backward_Euler(n, tsteps, dt, alpha);
