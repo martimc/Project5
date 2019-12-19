@@ -4,6 +4,13 @@ import numpy as np
 import sys
 import matplotlib.font_manager
 
+def f(x,t):
+    N = 1000
+    u = x
+    for n in range(1,N):
+        u += (-1)**n*2/(n*np.pi)*np.sin(n*np.pi*x)*np.exp(-1*(n*np.pi)**2*t)
+    return u
+
 def readfile(file):
     u_forward = []
     u_backward = []
@@ -30,11 +37,10 @@ def readfile(file):
     o.close()
     return n, t, u_forward ,u_backward ,u_CN
 
-u, n = readfile(sys.argv[1])
+n, t, u_forward, u_backward, u_CN = readfile(sys.argv[1])
 
 plt.rc('text', usetex=True)
 plt.rc('font', family='Computer Modern', size=15)
-x = np.linspace(0,1, n+1)
 
 plt.plot(x, u)
 plt.xlabel("position (x)")
@@ -44,3 +50,11 @@ plt.grid()
 plt.tight_layout()
 plt.savefig('x_Disp.pdf')
 plt.close()
+
+x = np.linspace(0,1, 101)
+t = 0.1
+u = np.zeros(101)
+for i in range(101):
+    u[i] = f(x[i], t)
+plt.plot(x, u)
+plt.show()
